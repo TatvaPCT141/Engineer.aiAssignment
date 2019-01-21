@@ -1,5 +1,7 @@
 package assignment;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -33,8 +35,8 @@ public class OpenURL {
 
 	public static void SearchExample(String url, String searchValue)
 	{
-		OpenURL(url);
 		List<WebElement>  tableEle= driver.get().findElements(By.xpath("//*[@id=\"content\"]/ul"));
+		boolean searchFound= false;
 		for (WebElement ulEle : tableEle)
 		{
 			List<WebElement> li =null;
@@ -43,14 +45,29 @@ public class OpenURL {
 			{
 				if(liElement.getText().equalsIgnoreCase(searchValue))
 				{
-					liElement.click();
+					List<WebElement>  a=liElement.findElements(By.tagName("a"));
+					//liElement.click();
+					for(WebElement aLink: a)
+					{
+						aLink.click();
+						searchFound= true;
+						break;
+					}
 				}
 				else
 				{
-					System.out.println("Link's name not found");
-					driver.get().quit();
+					System.out.println("Link's name not found: "+ searchValue+ ", Value found is:"+ liElement.getText());
 				}
 			}
+		}
+		if(searchFound==false)
+		{
+			System.out.println("Link's name not found with the Name: "+ searchValue);
+			driver.get().quit();
+		}
+		else
+		{
+			System.out.println("Search Test Case Pass Successfully and Found the name with: "+ searchValue);
 		}
 		
 	}
@@ -58,16 +75,19 @@ public class OpenURL {
 	{
 		try 
 		{
-			//Open URL
-			OpenURL(args[0]);
-			
-			//Search from example
-			SearchExample(args[0],args[1]);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Enter Application URL: ");
+			String url = reader.readLine();
+			//Open URL https://the-internet.herokuapp.com
+			OpenURL(url);
+			System.out.println("Enter Search Value");
+			String searchvalue= reader.readLine();
+			//Search from example: Frames
+			SearchExample(url,searchvalue);
 		} 
 		catch (Exception e) 
 		{
 			System.out.println("Error Found: "+e.getMessage());
-			
 		}
 
 	}
